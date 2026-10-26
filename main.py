@@ -1,5 +1,7 @@
-from fastapi import FastAPI
-from starlette.responses import HTMLResponse
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
 
@@ -21,9 +23,10 @@ posts: list[dict] = [
 ]
 
 
-@app.get("/", response_class=HTMLResponse)
-def read_root():
-    return f"<h1>{posts[0]['title']}</h1>"
+@app.get("/")
+@app.get("/posts")
+def read_root(request: Request):
+    return templates.TemplateResponse(request, "index.html", {"posts": posts, "title": "home"})
 
 
 @app.get("/api/posts")
